@@ -1,44 +1,33 @@
-#
-# Please submit bugfixes or comments via http://www.trinitydesktop.org/
-#
+%bcond clang 1
 
 # TDE variables
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
+%define pkg_rel 2
+
 %define tde_pkg polkit-tqt
 
-%if 0%{?mdkversion} || 0%{?mgaversion} || 0%{?pclinuxos}
 %define libpolkit_tqt %{_lib}%{tde_pkg}
-%else
-%define libpolkit_tqt lib%{tde_pkg}
-%endif
 
-%if 0%{?mdkversion}
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
 %define _disable_rebuild_configure 1
-%endif
 
 # fixes error: Empty %files file …/debugsourcefiles.list
 %define _debugsource_template %{nil}
 
 %define tarball_name %{tde_pkg}-trinity
-%global toolchain %(readlink /usr/bin/cc)
 
 
 Name:		trinity-%{tde_pkg}
 Version:	0.103.0
-Release:	%{?tde_version}_%{?!preversion:1}%{?preversion:0_%{preversion}}%{?dist}
+Release:	%{?tde_version}_%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
 Summary:	PolicyKit-tqt library
 Group:		Development/Libraries/C and C++
 URL:		http://www.trinitydesktop.org/
 
-%if 0%{?suse_version}
-License:	GPL-2.0+
-%else
 License:	GPLv2+
-%endif
 
 #Vendor:		Trinity Desktop
 #Packager:	Francois Andriot <francois.andriot@free.fr>
@@ -46,15 +35,20 @@ License:	GPLv2+
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/dependencies/%{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}.tar.xz
 Source1:		%{name}-rpmlintrc
 
-BuildRequires:  cmake make
+BuildSystem:    cmake
+BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
+BuildOption:    -DCMAKE_NO_BUILTIN_CHRPATH=ON
+BuildOption:    -DBUILD_ALL=ON
+BuildOption:    -DWITH_ALL_OPTIONS=ON
+
 BuildRequires:	trinity-tde-cmake >= %{tde_version}
 BuildRequires:	trinity-dbus-1-tqt-devel
 BuildRequires:	libtqt4-devel
 
 BuildRequires:	desktop-file-utils
-%if "%{?toolchain}" != "clang"
-BuildRequires:	gcc-c++
-%endif
+
+%{!?with_clang:BuildRequires:	gcc-c++}
+
 BuildRequires:	gettext
 
 BuildRequires:	pkgconfig(polkit-agent-1)
@@ -179,44 +173,12 @@ This package contains example files and applications.
 %{_datadir}/dbus-1/system-services/org.tqt.policykit.examples.service
 %{_datadir}/polkit-1/actions/org.tqt.policykit.examples.policy
 
-##########
 
-%if 0%{?suse_version} && 0%{?opensuse_bs} == 0
-%debug_package
-%endif
-
-##########
-
-%prep
-%autosetup -n %{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}
-
-
-%build
+%conf -p
 unset QTDIR QTINC QTLIB
 
-if ! rpm -E %%cmake|grep -e 'cd build\|cd ${CMAKE_BUILD_DIR:-build}'; then
-  %__mkdir_p build
-  cd build
-fi
 
-%cmake \
-  -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
-  -DCMAKE_C_FLAGS="${RPM_OPT_FLAGS}" \
-  -DCMAKE_CXX_FLAGS="${RPM_OPT_FLAGS}" \
-  -DCMAKE_NO_BUILTIN_CHRPATH=ON \
-  -DCMAKE_VERBOSE_MAKEFILE=ON \
-  -DWITH_GCC_VISIBILITY=ON \
-  \
-  -DBUILD_ALL="ON" \
-  -DWITH_ALL_OPTIONS="ON" \
-  ..
-
-%__make %{?_smp_mflags} || %__make
-
-
-%install
-%__make install -C build DESTDIR=%{?buildroot}
-
+%install -a
 # Unwanted files
 %__rm -f %{buildroot}%{_libdir}/libpolkit-tqt-agent.la
 %__rm -f %{buildroot}%{_libdir}/libpolkit-tqt-core.la
