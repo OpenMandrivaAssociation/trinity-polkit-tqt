@@ -4,7 +4,7 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
-%define pkg_rel 2
+%define pkg_rel 3
 
 %define tde_pkg polkit-tqt
 
@@ -40,6 +40,7 @@ BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
 BuildOption:    -DCMAKE_NO_BUILTIN_CHRPATH=ON
 BuildOption:    -DBUILD_ALL=ON
 BuildOption:    -DWITH_ALL_OPTIONS=ON
+BuildOption:    -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
 
 BuildRequires:	trinity-tde-cmake >= %{tde_version}
 BuildRequires:	trinity-dbus-1-tqt-devel
