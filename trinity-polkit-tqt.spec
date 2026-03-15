@@ -71,8 +71,6 @@ the libpolkit-tqt library.
 Summary:	TQt source code editing component based on Scintilla
 Group:		Development/Libraries/C and C++
 
-# Requires:	%{_lib}tqt3-mt >= 3.5.0
-
 %description -n %{libname}0
 PolicyKit is an application-level toolkit for defining and handling the policy
 that allows unprivileged processes to speak to privileged processes.
@@ -101,8 +99,7 @@ the libpolkit-tqt library.
 Summary:	PolicyKit-tqt development files
 Group:		Development/Libraries/C and C++
 
-Requires:	%{libname}0 = %{version}-%{release}
-# Requires:	libtqt3-mt-devel >= 3.5.0
+Requires:	%{libname}0 = %{EVRD}
 
 %description -n %{devname}
 PolicyKit is an application-level toolkit for defining and handling the policy
@@ -133,8 +130,8 @@ This package contains the development libraries and headers.
 %package -n %{libname}-examples
 Summary:	Polkit-tqt Documentation
 Group:		Development/Libraries/C and C++
-Provides:	%{libname}-doc = %{version}-%{release}
-Requires:	%{libname}0 = %{version}-%{release}
+Provides:	%{libname}-doc = %{EVRD}
+Requires:	%{libname}0 = %{EVRD}
 Requires:	trinity-filesystem >= %{tde_version}
 
 %description -n %{libname}-examples
