@@ -43,6 +43,7 @@ BuildOption:    -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
 BuildRequires:	trinity-tde-cmake >= %{tde_version}
 BuildRequires:	pkgconfig(dbus-1-tqt)
 BuildRequires:	pkgconfig(tqt)
+BuildRequires:  tqt3-dev-tools
 
 BuildRequires:	desktop-file-utils
 
